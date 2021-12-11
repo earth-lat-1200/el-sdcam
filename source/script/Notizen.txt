@@ -1,0 +1,25 @@
+
+Änderungen:
+-----------
+- REST Übertragung in sundialcam.py hinzugefügt
+- sdcfun.WriteRemote() hinzugefügt
+
+Notizen:
+-------
+kepleruhr.at Zugriff auf imgTotal, imgDetail - derzeit über FTP
+ - Ändern auf REST? 
+ - FTP Übertragung parallel beibehalten?
+
+Vorerst beides beibehalten, langfristig umstellen
+
+Zusätzlich wird noch Status mitübertragen
+
+API Key? In station.cfg speichern
+API im Header:
+  x-functions-key ... 
+
+Route? 
+
+restupload zusätzlich zu ftpupload in station.cfg? Oder Upload verallgemeinern?
+
+

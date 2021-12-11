@@ -443,3 +443,15 @@ def GetRemote( filename ):
         ret.ZoomCentPercX  = remote.getint( 'Detail',  'zoomcentpercx' )
         ret.ZoomCentPercY  = remote.getint( 'Detail',  'zoomcentpercy' )
         return ret
+
+#Write remote command file
+def WriteRemote(filename, remote):
+        remote[ 'Command' ] = { 'camoffline': remote.CamOffLine,
+                                'periodm': remote.PerodM,
+                                'series': remote.Series, 
+                                'zoommove': remote.ZoomMove, 
+                                'zoomdrawrect': remote.ZoomDrawRect }
+        remote[ 'Detail'  ] = { 'zoomcentpercx': remote.ZoomCentPercX,
+                                'zoomcentpercy': remote.ZoomCentPercY }
+        with open( filename, 'w' ) as stationfile:
+                info.write( stationfile )

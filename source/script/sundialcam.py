@@ -34,6 +34,7 @@ import sdcfun, sdcfun2
 from time import gmtime, strftime
 from datetime import date, datetime, timedelta
 from math import sin
+import requests, base64
 
 # FontPath = "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf"
 # FontPathBold = "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Bold.ttf"
@@ -464,6 +465,92 @@ def main( argv ):
                                         if ( OPDelayS > OPDelayMax ):
                                                 logging.warning( 'Exceeded expected runtime - OPDelayS %i sec', OPDelayS )
 
+                                logging.debug( 'End image transfer' )
+                        
+                        else:
+                                # image transfer via REST
+                                logging.debug( 'Start image transfer' )
+                                requestData = {}
+
+                                if P_TransInfo:
+                                        requestData['stationInfo'] = {
+                                                'header': {
+                                                        'idName': SDCRun.IDName,
+                                                        'idNo': SDCRun.IDNo
+                                                },
+                                                'info': {
+                                                        'name': SDCStation.Name,
+                                                        'location': SDCStation.Location,
+                                                        'latitude': SDCStation.Latitude,
+                                                        'longitude':SDCStation.Longitude,
+                                                        'typeWebCam': SDCStation.TypeWebcam,
+                                                        'typeTransfer': SDCStation.TypeTransfer,
+                                                        'text': SDCStation.Text,
+                                                        'website': SDCStation.Website,
+                                                        'team': SDCStation.Team,
+                                                        'nearbyPublicInst': SDCStation.NearbyPublicInst,
+                                                        'organization': SDCStation.Organization
+                                                }
+                                        }
+                                        P_TransInfo = 0
+
+                                if P_TransTot or P_TransOffline or P_TransDark:
+                                        imgTotal_base64 = ''
+                                        with open(FileImgTotal, 'rb') as image_file:
+                                                imgTotal_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+                                        requestData['imgTotal'] = imgTotal_base64
+                                        P_TransTot = 0
+
+                                if P_TransDet or P_TransOffline or P_TransDark:
+                                        imgDetail_base64 = ''
+                                        with open(FileImgTotal, 'rb') as image_file:
+                                                imgDetail_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+                                        requestData['imgDetail'] = imgDetail_base64
+                                        P_TransDet = 0
+                                
+                                requestData['status'] = {
+                                        'system' : {
+                                                'swVersion': SDCStatus.SWVersion,
+                                                'captureTime': SDCStatus.ImgUTC,
+                                                'captureLat': SDCStatus.ImgLAT,
+                                                'cpuTemperature': SDCStatus.CPUTemp,
+                                                'cameraTemperature': SDCStatus.CamTemp,
+                                                'outcaseTemperature': SDCStatus.OutTemp 
+                                        },
+                                        'dial' : {
+                                                'brightness': SDCStatus.IMGBright,
+                                                'sunny': SDCStatus.Sunny,
+                                                'cloudy': SDCStatus.Cloudy,
+                                                'night': SDCStatus.Night
+                                        }
+                                }
+                                
+                                try:
+                                        key = ''
+                                        # In Header
+                                        route = 'http://localhost:7071/api/transfer-images/%s' % key
+                                        headers = {'x-functions-key': 'xxx'}
+                                        response = requests.post(route, json=requestData, headers=headers)
+                                        responseData = response.json()['data']
+
+                                        SDCRemote.CamOffLine = responseData['command']['camOffline']
+                                        SDCRemote.PerodM = responseData['command']['periodM']
+                                        SDCRemote.Series = responseData['command']['series']
+                                        SDCRemote.ZoomMove = responseData['command']['zoomMove']
+                                        SDCRemote.ZoomDrawRect = responseData['command']['zoomDrawRect']
+                                        SDCRemote.ZoomCentPercX = responseData['detail']['zoomCentPercX']
+                                        SDCRemote.ZoomCentPercY = responseData['detail']['zoomCentPercY']
+                                        sdcfun.WriteRemote(FileRemoteCmdCfg, SDCRemote)
+
+                                        P_TransCmd = 1
+                                except:
+                                        logging.debug( 'error getting reponse' )
+                                        P_TransCmd = 0
+
+                                TicksAct = time.time()
+                                OPDelayS = int( TicksAct - TicksCap )
+                                if ( OPDelayS > OPDelayMax ):
+                                        logging.warning( 'Exceeded expected runtime - OPDelayS %i sec', OPDelayS )
                                 logging.debug( 'End image transfer' )
 
                         logging.debug( 'End period' )
