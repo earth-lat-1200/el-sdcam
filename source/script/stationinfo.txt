@@ -1,0 +1,17 @@
+[Header]
+idno = AT101
+idname = SDC_Developer
+
+[Info]
+name = Devolper Station
+nearbypublicinst = Great Public Building, anywhere
+website = Website
+text = A short description of the sundial, the local project, another interesting details. 
+typetransfer = RaspberryPI
+team = local members
+typewebcam = RaspberryPI+Cam
+location = City, Country
+organization = What is the organization of the team
+latitude = 48.30
+longitude = 10.00
+
