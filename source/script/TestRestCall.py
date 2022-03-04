@@ -1,77 +1,51 @@
-import requests
-import base64
-import configparser
+import base64, requests, configparser, logging
 
-config = configparser.ConfigParser()
-config.read('script/stationinfo.txt')
+# image transfer via REST
+logging.debug( 'Start image transfer' )
+requestData = {}
+
+requestData = {
+    'stationName': 'ROCLUJObservatory',
+    'stationId': 'RO001',
+    'sundialName': 'Observatorul Astronomic Cluj-Napoca',
+    'location': 'Cluj-Napoca, Cluj, Romania',
+    'latitude': 46.757731,
+    'longitude': 23.586472,
+    'webcamType': 'RaspberryPI+Cam',
+    'transferType': 'RaspberryPI',
+    'sundialInfo': 'The sundial was constructed by Miholcsa Gyula in 2017. Hours read LAT + longitude correction/DST. Dotted line marks local noon.',
+    'websiteUrl': 'https://astronomieculturala.ro, https://ubbcluj.ro',
+    'teamName': 'Dan-George Uza, Mihai Cuibus, Hans Johrend',
+    'nearbyPublicInstitute': 'Observatorul Astronomic Cluj-Napoca, Str. Ciresilor nr. 19, Cluj-Napoca, 400487, RO',
+    'organizationalForm': 'Societatea Romana pentru Astronomie Culturala'
+}
 
 imgTotal_base64 = ''
+with open('C:/earthlat/' + requestData['stationId'] + '/imgtotal.jpg', 'rb') as image_file:
+	imgTotal_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+requestData['imgTotal'] = imgTotal_base64
+
 imgDetail_base64 = ''
-with open('imgtotal.jpg', 'rb') as image_file:
-    imgTotal_base64 = base64.b64encode(image_file.read()).decode('utf-8')
-with open('imgdetail.jpg', 'rb') as image_file:
-    imgDetail_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+with open('C:/earthlat/' + requestData['stationId'] + '/imgdetail.jpg', 'rb') as image_file:
+	imgDetail_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+requestData['imgDetail'] = imgDetail_base64
 
-jsonMessage = {
-	'imgTotal' : 'base64',
-	'imgDetail' : 'base64',
-	'stationInfo' : {
-		'header' : {
-			'idName': 'AT101',
-			'idNo': 'SDC_Developer'
-		},
-		'info': {
-			'name': 'Developer Station',
-			'location': 'City, Country',
-			'latitude' : 48.30,
-			'longitude' : 10.00,
-			'typeWebCam' : 'RaspberryPI+Cam',
-			'typeTransfer' : 'RaspberryPI',
-			'text' : 'A short description of the sundial, the local project, another interesting details.',
-			'website' : 'Website',
-			'team' : 'local members',
-			'nearbyPublicInst' : 'Great Public Building, anywhere',
-			'organization' : 'What is the organization of the team'
-		}
-	},
-	'status' : {
-       'System' : {
-			'swversion' : 0,
-			'capturetime' : 0,
-			'capturelat' : 0,
-			'cputemperature' : 0,
-			'cameratemperature' : 0,
-			'outcasetemperature' : 0 
-		},
-        'Dial' : {
-			'brightness' : 0,
-            'sunny' : 0,
-            'cloudy' : 0,
-            'night' : 0
-		}
-	}
+requestData['Status'] = {
+	'swVersion': "Version 0.1",
+	'captureTime': "UTC: ...",
+	'captureLat': "LAT: ...",
+	'cpuTemparature': 50.0,
+	'cameraTemparature': 20.0,
+	'outcaseTemparature': 20.0,
+	'brightness': 10,
+	'sunny': 1,
+	'cloudy': 0,
+	'night': 0
 }
 
-possibleResponse = '''
-{
-	'command': {
-		'camOffline': 0,
-		'periodM': 0,
-		'series': 0,
-		'zoomMove': 0,
-		'zoomDrawRect': 0
-	},
-	'detail': {
-		'zoomCentPercX': 0,
-		'zoomCentPercY': 0
-	}
-}
-'''
-
-#key = ''
-#route = 'http://localhost:7071/api/transfer-images/%s' % key'
-route = 'https://httpbin.org/anything'
-response = requests.put(route, json=jsonMessage)
-responseData = response.json()['data']
-
-print('data:\n%s' % responseData)
+route = 'https://staging-earth-lat-1200-api.azurewebsites.net/api/%s/Push' % requestData['stationId']
+headers = {'x-functions-key': 'MyQuFbkVvtpRFZ6goLzmwdNjwSGnUhIYx89emvCEG8PSF5vJdBaooQ=='}
+response = requests.post(route, json=requestData, headers=headers)
+print(response)
+responseData = response.json()["value"]
+print(responseData)

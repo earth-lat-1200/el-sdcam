@@ -43,6 +43,8 @@ class RunPar:
                 self.Port = 22
                 self.User = 'user'
                 self.Password = 'password'
+                self.ApiUrl = 'api_url'
+                self.ApiKey = 'api_key'
 
         def Init( self, periodm, ftpupload, stream, series, zoommove, zoomdrawrect, sysoffline, remotecmd ):
                 self.IDName = 'idname'
@@ -59,6 +61,8 @@ class RunPar:
                 self.Port = 22
                 self.User = 'user'
                 self.Password = 'password'
+                self.ApiUrl = 'api_url'
+                self.ApiKey = 'api-key'
 
         def AdjustPeriod( self, periodm ):
                 ret = 0
@@ -242,6 +246,8 @@ def WriteParameter( filename, cam, run, must ):
                                        'port': run.Port,
                                        'user': run.User,
                                        'password': run.Password }
+                config[ 'REST'   ] = { 'api_url' : run.ApiUrl,
+                                       'api_key' : run.ApiKey }
                 config[ 'Total'  ] = { 'cropperc': cam.CropPerc,
                                        'cropaspratioperc': cam.CropAspRatioPerc,
                                        'cropcentpercx': cam.CropCentPercX,
@@ -337,6 +343,8 @@ def GetParameter( filename, cam ):
         ret.Port              = config.getint( 'FTP',    'port' )
         ret.User              = config.get(    'FTP',    'user' )
         ret.Password          = config.get(    'FTP',    'password' )
+        ret.ApiUrl            = config.get(    'REST',   'api_url' )
+        ret.ApiKey            = config.get(    'REST',   'api_key' )
         ret.PeriodM           = config.getint( 'Detail', 'periodm' )
         ret.FTPupload         = config.getint( 'Detail', 'ftpupload' )
         ret.Stream            = config.getint( 'Detail', 'stream' )

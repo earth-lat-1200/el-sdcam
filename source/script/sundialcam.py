@@ -473,24 +473,20 @@ def main( argv ):
                                 requestData = {}
 
                                 if P_TransInfo:
-                                        requestData['stationInfo'] = {
-                                                'header': {
-                                                        'idName': SDCRun.IDName,
-                                                        'idNo': SDCRun.IDNo
-                                                },
-                                                'info': {
-                                                        'name': SDCStation.Name,
-                                                        'location': SDCStation.Location,
-                                                        'latitude': SDCStation.Latitude,
-                                                        'longitude':SDCStation.Longitude,
-                                                        'typeWebCam': SDCStation.TypeWebcam,
-                                                        'typeTransfer': SDCStation.TypeTransfer,
-                                                        'text': SDCStation.Text,
-                                                        'website': SDCStation.Website,
-                                                        'team': SDCStation.Team,
-                                                        'nearbyPublicInst': SDCStation.NearbyPublicInst,
-                                                        'organization': SDCStation.Organization
-                                                }
+                                        requestData = {
+                                                'stationName': SDCRun.IDName,
+                                                'stationId': SDCRun.IDNo,
+                                                'sundialName': SDCStation.Name,
+                                                'location': SDCStation.Location,
+                                                'latitude': SDCStation.Latitude,
+                                                'longitude':SDCStation.Longitude,
+                                                'webcamType': SDCStation.TypeWebcam,
+                                                'transferType': SDCStation.TypeTransfer,
+                                                'sundialInfo': SDCStation.Text,
+                                                'websiteUrl': SDCStation.Website,
+                                                'teamName': SDCStation.Team,
+                                                'nearbyPublicInstitute': SDCStation.NearbyPublicInst,
+                                                'organizationalForm': SDCStation.Organization
                                         }
                                         P_TransInfo = 0
 
@@ -508,38 +504,32 @@ def main( argv ):
                                         requestData['imgDetail'] = imgDetail_base64
                                         P_TransDet = 0
                                 
-                                requestData['status'] = {
-                                        'system' : {
-                                                'swVersion': SDCStatus.SWVersion,
-                                                'captureTime': SDCStatus.ImgUTC,
-                                                'captureLat': SDCStatus.ImgLAT,
-                                                'cpuTemperature': SDCStatus.CPUTemp,
-                                                'cameraTemperature': SDCStatus.CamTemp,
-                                                'outcaseTemperature': SDCStatus.OutTemp 
-                                        },
-                                        'dial' : {
-                                                'brightness': SDCStatus.IMGBright,
-                                                'sunny': SDCStatus.Sunny,
-                                                'cloudy': SDCStatus.Cloudy,
-                                                'night': SDCStatus.Night
-                                        }
+                                requestData['Status'] = {
+                                        'swVersion': SDCStatus.SWVersion,
+                                        'captureTime': SDCStatus.ImgUTC,
+                                        'captureLat': SDCStatus.ImgLAT,
+                                        'cpuTemparature': SDCStatus.CPUTemp,
+                                        'cameraTemparature': SDCStatus.CamTemp,
+                                        'outcaseTemparature': SDCStatus.OutTemp,
+                                        'brightness': SDCStatus.IMGBright,
+                                        'sunny': SDCStatus.Sunny,
+                                        'cloudy': SDCStatus.Cloudy,
+                                        'night': SDCStatus.Night
                                 }
                                 
                                 try:
-                                        key = ''
-                                        # In Header
-                                        route = 'http://localhost:7071/api/transfer-images/%s' % key
-                                        headers = {'x-functions-key': 'xxx'}
+                                        route = SDCRun.ApiUrl + '%s/Push' % SDCRun.IDNo
+                                        headers = {'x-functions-key': SDCRun.ApiKey}
                                         response = requests.post(route, json=requestData, headers=headers)
                                         responseData = response.json()['data']
 
-                                        SDCRemote.CamOffLine = responseData['command']['camOffline']
-                                        SDCRemote.PerodM = responseData['command']['periodM']
-                                        SDCRemote.Series = responseData['command']['series']
-                                        SDCRemote.ZoomMove = responseData['command']['zoomMove']
-                                        SDCRemote.ZoomDrawRect = responseData['command']['zoomDrawRect']
-                                        SDCRemote.ZoomCentPercX = responseData['detail']['zoomCentPercX']
-                                        SDCRemote.ZoomCentPercY = responseData['detail']['zoomCentPercY']
+                                        SDCRemote.CamOffLine = responseData['isCamOffline']
+                                        SDCRemote.PeriodM = responseData['period']
+                                        SDCRemote.Series = responseData['isSeries']
+                                        SDCRemote.ZoomMove = responseData['isZoomMove']
+                                        SDCRemote.ZoomDrawRect = responseData['isZoomDrawRect']
+                                        SDCRemote.ZoomCentPercX = responseData['zoomCenterPerCX']
+                                        SDCRemote.ZoomCentPercY = responseData['zoomCenterPerCy']
                                         sdcfun.WriteRemote(FileRemoteCmdCfg, SDCRemote)
 
                                         P_TransCmd = 1
