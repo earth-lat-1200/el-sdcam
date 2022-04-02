@@ -472,23 +472,21 @@ def main( argv ):
                                 logging.debug( 'Start image transfer' )
                                 requestData = {}
 
-                                if P_TransInfo:
-                                        requestData = {
-                                                'stationName': SDCRun.IDName,
-                                                'stationId': SDCRun.IDNo,
-                                                'sundialName': SDCStation.Name,
-                                                'location': SDCStation.Location,
-                                                'latitude': SDCStation.Latitude,
-                                                'longitude':SDCStation.Longitude,
-                                                'webcamType': SDCStation.TypeWebcam,
-                                                'transferType': SDCStation.TypeTransfer,
-                                                'sundialInfo': SDCStation.Text,
-                                                'websiteUrl': SDCStation.Website,
-                                                'teamName': SDCStation.Team,
-                                                'nearbyPublicInstitute': SDCStation.NearbyPublicInst,
-                                                'organizationalForm': SDCStation.Organization
-                                        }
-                                        P_TransInfo = 0
+                                requestData = {
+                                        'stationName': SDCRun.IDName,
+                                        'stationId': SDCRun.IDNo,
+                                        'sundialName': SDCStation.Name,
+                                        'location': SDCStation.Location,
+                                        'latitude': SDCStation.Latitude,
+                                        'longitude':SDCStation.Longitude,
+                                        'webcamType': SDCStation.TypeWebcam,
+                                        'transferType': SDCStation.TypeTransfer,
+                                        'sundialInfo': SDCStation.Text,
+                                        'websiteUrl': SDCStation.Website,
+                                        'teamName': SDCStation.Team,
+                                        'nearbyPublicInstitute': SDCStation.NearbyPublicInst,
+                                        'organizationalForm': SDCStation.Organization
+                                }
 
                                 if P_TransTot or P_TransOffline or P_TransDark:
                                         imgTotal_base64 = ''
