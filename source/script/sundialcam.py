@@ -559,8 +559,7 @@ def main( argv ):
                         if P_TransCmd:
                                 try:
                                         text = ( 'Before fetch remotecmd.cfg: SDCRemote.Series {a}' ).format( a = SDCRemote.Series )
-                                        print( text )
-                                        SDCRemote = sdcfun.GetRemote( FileRemoteCmdCfg )
+                                        print( text ) SDCRemote = sdcfun.GetRemote( FileRemoteCmdCfg ) 
                                         text = ( 'Got remotecmd.cfg: SDCRemote.Series {a}' ).format( a = SDCRemote.Series )
                                         print( text )
                                 except:
