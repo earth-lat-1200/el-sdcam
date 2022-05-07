@@ -258,6 +258,7 @@ def main( argv ):
                                 dgain = float( Cam.digital_gain )
                                 gain = again * dgain + 0.01
                                 SDCStatus.IMGBright = int( 1e9 / float( Cam.exposure_speed ) / gain )
+
                                 if SDCStatus.IMGBright > (BThresCloudy + BThresCloudyHyst):
                                         BThresCloudyHyst = -abs( BThresCloudyHyst )
                                         SDCStatus.Night = 0
@@ -395,6 +396,7 @@ def main( argv ):
 
                         #Transfer images via FTP
                         if ( SDCRun.FTPupload ):
+
                                 logging.debug( 'Start image transfer' )
 
                                 #Check internet connection
@@ -468,6 +470,9 @@ def main( argv ):
                                 logging.debug( 'End image transfer' )
                         
                         else:
+
+                                print("start image transfer")
+
                                 # image transfer via REST
                                 logging.debug( 'Start image transfer' )
                                 requestData = {}
@@ -516,22 +521,29 @@ def main( argv ):
                                 }
                                 
                                 try:
-                                        route = SDCRun.ApiUrl + '%s/Push' % SDCRun.IDNo
-                                        headers = {'x-functions-key': SDCRun.ApiKey}
-                                        response = requests.post(route, json=requestData, headers=headers)
-                                        responseData = response.json()['data']
+                                        route = SDCRun.ApiUrl + '%s/Push' % SDCRun.IDNo                                        
 
-                                        SDCRemote.CamOffLine = responseData['isCamOffline']
-                                        SDCRemote.PeriodM = responseData['period']
-                                        SDCRemote.Series = responseData['isSeries']
-                                        SDCRemote.ZoomMove = responseData['isZoomMove']
-                                        SDCRemote.ZoomDrawRect = responseData['isZoomDrawRect']
-                                        SDCRemote.ZoomCentPercX = responseData['zoomCenterPerCX']
-                                        SDCRemote.ZoomCentPercY = responseData['zoomCenterPerCy']
+                                        print(route)
+                                        
+                                        headers = {'x-functions-key': SDCRun.ApiKey}
+
+                                        response = requests.post(route, json=requestData, headers=headers)
+                                        
+                                        responseData = response.json()['value']
+
+                                        SDCRemote.CamOffLine = int(responseData['isCamOffline'])
+                                        SDCRemote.PeriodM = int(responseData['period'])
+                                        SDCRemote.Series = int(responseData['isSeries'])
+                                        SDCRemote.ZoomMove = int(responseData['isZoomMove'])
+                                        SDCRemote.ZoomDrawRect = int(responseData['isZoomDrawRect'])
+                                        SDCRemote.ZoomCentPercX = int(responseData['zoomCenterPerCX'])
+                                        SDCRemote.ZoomCentPercY = int(responseData['zoomCenterPerCy'])
                                         sdcfun.WriteRemote(FileRemoteCmdCfg, SDCRemote)
 
                                         P_TransCmd = 1
-                                except:
+                                except Exception as e:
+                                        print('error')
+                                        print(e)
                                         logging.debug( 'error getting reponse' )
                                         P_TransCmd = 0
 
@@ -547,8 +559,7 @@ def main( argv ):
                         if P_TransCmd:
                                 try:
                                         text = ( 'Before fetch remotecmd.cfg: SDCRemote.Series {a}' ).format( a = SDCRemote.Series )
-                                        print( text )
-                                        SDCRemote = sdcfun.GetRemote( FileRemoteCmdCfg )
+                                        print( text ) SDCRemote = sdcfun.GetRemote( FileRemoteCmdCfg ) 
                                         text = ( 'Got remotecmd.cfg: SDCRemote.Series {a}' ).format( a = SDCRemote.Series )
                                         print( text )
                                 except:
