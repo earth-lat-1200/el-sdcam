@@ -11,7 +11,7 @@ VERSION = "Dec_08_2019"
 # sdcfun2.py - Functions for further processing
 # station.cfg - Containing working parameter
 # remotecmd.cfg - Containing remote commands parameter
-# sundialcam.log - Log file
+# sundialcam.log - Log file
 # status.txt - Live status values
 #
 # History see Mainmodule
@@ -421,7 +421,7 @@ def WriteStationInfo( filename, run, station ):
                         info.write( stationfile )
 
 #Class Remote with parameter
-class Remote:
+class Remote(object):
         def __init__( self ):
                 self.CamOffLine = 0
                 self.PerodM = 1
@@ -443,6 +443,7 @@ class Remote:
 def GetRemote( filename ):
         ret = Remote()
         remote.read( filename )
+
         ret.CamOffLine     = remote.getint( 'Command', 'camoffline' )
         ret.PeriodM        = remote.getint( 'Command', 'periodm' )
         ret.Series         = remote.getint( 'Command', 'series' )
@@ -450,16 +451,18 @@ def GetRemote( filename ):
         ret.ZoomDrawRect   = remote.getint( 'Command', 'zoomdrawrect' )
         ret.ZoomCentPercX  = remote.getint( 'Detail',  'zoomcentpercx' )
         ret.ZoomCentPercY  = remote.getint( 'Detail',  'zoomcentpercy' )
+
         return ret
 
 #Write remote command file
-def WriteRemote(filename, remote):
-        remote[ 'Command' ] = { 'camoffline': remote.CamOffLine,
-                                'periodm': remote.PerodM,
-                                'series': remote.Series, 
-                                'zoommove': remote.ZoomMove, 
-                                'zoomdrawrect': remote.ZoomDrawRect }
-        remote[ 'Detail'  ] = { 'zoomcentpercx': remote.ZoomCentPercX,
-                                'zoomcentpercy': remote.ZoomCentPercY }
+def WriteRemote(filename, remoteInput):
+        remote[ 'Command' ] = { 'camoffline': remoteInput.CamOffLine,
+                                'periodm': remoteInput.PerodM,
+                                'series': remoteInput.Series, 
+                                'zoommove': remoteInput.ZoomMove, 
+                                'zoomdrawrect': remoteInput.ZoomDrawRect }
+        remote[ 'Detail'  ] = { 'zoomcentpercx': remoteInput.ZoomCentPercX,
+                                'zoomcentpercy': remoteInput.ZoomCentPercY }
+        
         with open( filename, 'w' ) as stationfile:
                 info.write( stationfile )
