@@ -1,0 +1,9 @@
+WARNING:root:Cmd('git') failed due to: exit code(1)
+  cmdline: git pull
+  stdout: 'Updating 1686167..06805e4'
+  stderr: 'From https://github.com/SFillip/el-sdcam
+   1686167..06805e4  main       -> origin/main
+error: The following untracked working tree files would be overwritten by merge:
+	source/script/updateLog.log
+Please move or remove them before you merge.
+Aborting' 2023-06-19 08:16:14.157015
