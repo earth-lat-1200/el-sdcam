@@ -7,3 +7,8 @@ error: The following untracked working tree files would be overwritten by merge:
 	source/script/updateLog.log
 Please move or remove them before you merge.
 Aborting' 2023-06-19 08:16:14.157015
+INFO:root:Updating 3aac63c..bc8a67b
+Fast-forward
+ test.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 test.txt 2023-06-19 08:20:59.835184
